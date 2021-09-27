@@ -6,11 +6,10 @@ let particleArray = [];
 let adjustX = canvas.width/200;
 let adjustY = canvas.height/200;
 
-// get mouse mouse position //
 let mouse = {
 	x: null,
 	y: null,
-    radius: 80
+    radius: 75
 }
 window.addEventListener('mousemove', 
 	function(event){
@@ -29,19 +28,18 @@ class Particle {
         this.size = 2,
         this.baseX = this.x,
         this.baseY = this.y,
-        this.density = ((Math.random() * 15) + 1);
+        this.density = ((Math.random() * 14) + 1);
 
 
     }
     draw() {
-            ctx.fillStyle = 'white';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.fill();
-        
-
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
     }
+
     update() {
         let dx = mouse.x - this.x;
         let dy = mouse.y - this.y;
@@ -67,6 +65,8 @@ class Particle {
         }
     }
 }
+
+
 function init(){
     particleArray = [];
  
@@ -75,14 +75,14 @@ function init(){
             if (data.data[(y * 4 * data.width) + (x * 4) + 3] > 120) {
                 let positionX = x + adjustX;
                 let positionY = y + adjustY;
-                particleArray.push(new Particle(positionX * 6, positionY * 7));
+                particleArray.push(new Particle(positionX * 7, positionY * 7));
             }
         }
     }
-    
 }
+
 function animate(){
-    ctx.fillStyle = 'rgba(0,0,0,1)';
+    ctx.fillStyle = 'rgba(255,255,255,1)';
     ctx.fillRect(0,0,innerWidth,innerHeight);
     ctx.clearRect(0,0,innerWidth,innerHeight);
     connect();
@@ -90,13 +90,11 @@ function animate(){
         particleArray[i].update();
         particleArray[i].draw();
     }
-    
     requestAnimationFrame(animate);
 }
 init();
 animate();
 
-// RESIZE SETTING - empty and refill particle array every time window changes size + change canvas size
 window.addEventListener('resize',
 function() {
     canvas.width = innerWidth;
@@ -110,23 +108,30 @@ function connect(){
     let opacityValue = 1;
     for (let a = 0; a < particleArray.length; a++) {
         for (let b = a; b < particleArray.length; b++) {
-            let distance = (( particleArray[a].x - particleArray[b].x) * (particleArray[a].x - particleArray[b].x))
-            + ((particleArray[a].y - particleArray[b].y) * (particleArray[a].y - particleArray[b].y));
+            let distance = (( particleArray[a].x - particleArray[b].x) * (particleArray[a].x - particleArray[b].x)) + ((particleArray[a].y - particleArray[b].y) * (particleArray[a].y - particleArray[b].y))
             
             if (distance < 2600) {
                 opacityValue = 1 - (distance/2600);
                 let dx = mouse.x - particleArray[a].x;
                 let dy = mouse.y - particleArray[a].y;
                 let mouseDistance = Math.sqrt(dx*dx+dy*dy);
+                
                 if (mouseDistance < mouse.radius / 2) {
                   ctx.strokeStyle='rgba(0,0,255,' + opacityValue + ')';
-                } else if (mouseDistance < mouse.radius - 50) {
-                  ctx.strokeStyle='rgba(0,0,210,' + opacityValue + ')';
-                } else if (mouseDistance < mouse.radius + 20) {
+                } 
+                
+                else if (mouseDistance < mouse.radius - 50) {
                   ctx.strokeStyle='rgba(0,0,140,' + opacityValue + ')';
-                } else  {
-                ctx.strokeStyle='rgba(0,0,0,' + opacityValue + ')';
+                } 
+                
+                else if (mouseDistance < mouse.radius + 20) {
+                  ctx.strokeStyle='rgba(0,0,40,' + opacityValue + ')';
+                } 
+                
+                else  {
+                    ctx.strokeStyle='rgba(0,0,0,' + opacityValue + ')';
                 }
+
                 ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(particleArray[a].x, particleArray[a].y);
@@ -134,6 +139,5 @@ function connect(){
                 ctx.stroke();
             }
         }
-    
     }
 }
